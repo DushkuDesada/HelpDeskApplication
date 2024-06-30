@@ -1,0 +1,101 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/layout/template.xhtml">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{projectBean.init()}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="pageTitle">Project List</ui:define>
+    <ui:define name="content">
+        <ui:fragment rendered="#{not empty loginBean.currentUser}">
+
+        <h:form id="form" role="form" class="form" prependId="false">
+            <div class="row g-3 mb-3">
+                <div class="col-auto">
+                    <h:outputLabel for="name" value="Name:"/>
+                </div>
+                <div class="col-auto">
+                    <input type="text"
+                           class="form-control"
+                           id="name"
+                           jsf:id="name"
+                           jsf:required="true"
+                           jsf:requiredMessage="Name is required."
+                           jsf:value="#{projectBean.form.name}"/>
+                    <p:message for="name" styleClass="text-danger"/>
+                </div>
+                <div class="col-auto">
+                    <p:outputLabel for="owner" value="Owner:"/>
+                </div>
+                <div class="col-auto">
+                    <p:selectOneMenu id="owner" value="#{projectBean.form.ownerId   }" required="true">
+                        <f:selectItem itemLabel="Select One" itemValue=""/>
+                        <f:selectItems value="#{projectBean.customerUsers}" var="user" itemLabel="#{user.username}" itemValue="#{user.id}"/>
+                    </p:selectOneMenu>
+                    <p:message for="owner" styleClass="text-danger"/>
+                </div>
+
+                <div class="col-auto">
+                    <input jsf:id="projectId" type="hidden" jsf:required="false" jsf:value="#{projectBean.form.id}">
+                        <f:converter converterId="uuidConverter"/>
+                    </input>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-large btn-primary mb-3" jsf:id="saveProject" jsf:action="#{projectBean.saveProject()}">
+                        <f:ajax execute="@form" render="@form"/>
+                        Save
+                    </button>
+                </div>
+            </div>
+            <!-- List group -->
+            <ui:fragment rendered="#{not empty projectBean.projects}">
+                <!-- Header -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong style="width: 40%;">Project Name</strong>
+                    <strong>Owner</strong>
+                    <strong>Actions</strong>
+                </li>
+                <!-- Projects list -->
+                <ul id="todotasks" class="list-group list-group-flush">
+                    <ui:repeat var="project" value="#{projectBean.paginatedProjects}">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span style="width: 40%;">#{project.name}</span>
+                            <span>#{project.owner.username}</span>
+                            <span>
+                    <a jsf:immediate="true" jsf:action="#{projectBean.editProject(project.id)}">
+                        <f:ajax execute="@this" render="@form"/>
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a jsf:immediate="true" jsf:action="#{projectBean.deleteProject(project.id)}">
+                        <f:ajax execute="@this" render="@all"/>
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </span>
+                        </li>
+                    </ui:repeat>
+                </ul>
+            </ui:fragment>
+
+
+            <!-- Pagination controls -->
+            <div class="pagination">
+                <ui:repeat var="pageNumber" value="#{projectBean.pageNumbers}">
+                    <h:commandLink value="#{pageNumber}" styleClass="page-link">
+                        <f:ajax execute="@this" listener="#{projectBean.changePage(pageNumber)}" render="@form" />
+                    </h:commandLink>
+                </ui:repeat>
+            </div>
+
+
+
+            <ui:fragment rendered="#{empty projectBean.projects}">
+                <p class="m-5">No Project items found</p>
+            </ui:fragment>
+        </h:form>
+    </ui:fragment>
+    </ui:define>
+</ui:composition>

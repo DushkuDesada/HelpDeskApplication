@@ -1,0 +1,13 @@
+/* Custom styles for the dropdown options */
+.custom-dropdown select {
+    /* Your existing styles for the select element */
+}
+
+.custom-dropdown select option {
+    font-size: 16px; /* Adjust font size as needed */
+    padding: 8px 12px; /* Adjust padding as needed */
+}
+
+option:hover {
+    background-color: #f8f9fa; /* Change background color on hover */
+}

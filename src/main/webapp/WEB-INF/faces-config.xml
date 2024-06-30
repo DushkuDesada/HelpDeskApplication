@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<faces-config xmlns="https://jakarta.ee/xml/ns/jakartaee"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-facesconfig_4_0.xsd"
+              version="4.0">
+    <factory>
+        <exception-handler-factory>com.example.web.DefaultExceptionHandlerFactory</exception-handler-factory>
+    </factory>
+
+    <navigation-rule>
+        <from-view-id>/index.xhtml</from-view-id>
+        <navigation-case>
+            <from-action>#{loginBean.login}</from-action>
+            <from-outcome>dashboard</from-outcome>
+            <to-view-id>/dashboard.xhtml</to-view-id>
+            <redirect/>
+        </navigation-case>
+    </navigation-rule>
+
+
+
+
+    <!-- Add more navigation rules as needed -->
+
+    <application>
+        <locale-config>
+            <default-locale>en</default-locale>
+            <supported-locale>zh</supported-locale>
+        </locale-config>
+        <resource-bundle>
+            <base-name>messages</base-name>
+            <var>messages</var>
+        </resource-bundle>
+
+
+    </application>
+
+    <lifecycle>
+        <phase-listener>com.example.web.MessageHandler</phase-listener>
+    </lifecycle>
+</faces-config>

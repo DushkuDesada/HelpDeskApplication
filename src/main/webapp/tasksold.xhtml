@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+    <title>Task Management</title>
+</h:head>
+<h:body>
+    <h1>Task Management</h1>
+
+    <!-- Create/Edit Dialog -->
+    <p:dialog id="taskDialog" header="Task Details" widgetVar="taskDialogWidget" resizable="false" modal="true">
+        <h:form id="taskDialogForm">
+            <h:panelGrid columns="2">
+                <h:outputLabel for="titleInput" value="Title:" />
+                <h:inputText id="titleInput" value="#{taskBean.form.title}" />
+
+                <h:outputLabel for="typeInput" value="Type:" />
+                <p:selectOneMenu id="typeInput" value="#{taskBean.form.type}">
+                    <f:selectItems value="#{taskBean.getTaskType()}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="statusInput" value="Status:" />
+                <p:selectOneMenu id="statusInput" value="#{taskBean.form.status}">
+                    <f:selectItems value="#{taskBean.getFilteredTaskStatus()}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="projectInput" value="Project:" />
+                <p:selectOneMenu id="projectInput" value="#{taskBean.form.project}">
+                    <f:selectItems value="#{taskBean.getProjects()}" var="project" itemValue="#{project.id}" itemLabel="#{project.name}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="assignedToInput" value="Assigned To:" />
+                <p:selectOneMenu id="assignedToInput" value="#{taskBean.form.assignedTo}">
+                    <f:selectItems value="#{taskBean.getUsers()}" var="user" itemValue="#{user.id}" itemLabel="#{user.username}" />
+                </p:selectOneMenu>
+
+                <h:outputLabel for="commentInput" value="Comment:" />
+                <h:inputTextarea id="commentInput" value="#{taskBean.comment}" />
+            </h:panelGrid>
+            <p:commandButton value="Save" action="#{taskBean.saveTask}" update=":taskListForm:taskList" oncomplete="PF('taskDialogWidget').hide()" />
+            <p:commandButton value="Cancel" type="button" onclick="PF('taskDialogWidget').hide()" />
+        </h:form>
+    </p:dialog>
+
+    <!-- Create Button -->
+    <h:form id="taskForm">
+        <p:commandButton value="Create Task" type="button" onclick="PF('taskDialogWidget').show()" />
+    </h:form>
+
+    <!-- Task List with Pagination -->
+    <h:form id="taskListForm">
+        <h:dataTable id="taskList" value="#{taskBean.paginatedTask}" var="task" border="1">
+            <h:column>
+                <f:facet name="header">Title</f:facet>
+                #{task.title}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Type</f:facet>
+                #{task.type}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Status</f:facet>
+                #{task.status}
+            </h:column>
+            <h:column>
+                <f:facet name="header">Actions</f:facet>
+                <h:form>
+                    <!-- Edit Button -->
+                    <p:commandButton value="Edit" action="#{taskBean.editTask(task.id)}" oncomplete="PF('taskDialogWidget').show()" />
+                    <p:commandButton value="Show" action="#{taskBean.showTask(task.id)}" oncomplete="PF('showDetailsDialogWidget').show()" />
+                    <!-- Delete Button -->
+                    <p:commandButton value="Delete" action="#{taskBean.deleteTask(task.id)}" onclick="if (!confirm('Are you sure you want to delete this task?')) return false;" />
+                </h:form>
+            </h:column>
+        </h:dataTable>
+
+        <!-- Pagination -->
+        <h:dataTable id="pagination" value="#{taskBean.pageNumbers}" var="pageNumber">
+            <h:column>
+                <h:commandLink value="#{pageNumber}" action="#{taskBean.changePage(pageNumber)}"/>
+            </h:column>
+        </h:dataTable>
+    </h:form>
+
+    <!-- Task Details Dialog -->
+    <p:dialog id="showDetailsDialog" header="Task Details" widgetVar="showDetailsDialogWidget" resizable="false" modal="true">
+        <h:panelGrid columns="2">
+            <h:outputLabel for="titleOutput" value="Title:" />
+            <h:outputText id="titleOutput" value="#{taskBean.get}" />
+
+            <h:outputLabel for="typeOutput" value="Type:" />
+            <h:outputText id="typeOutput" value="#{taskBean.form.type}" />
+
+            <h:outputLabel for="statusOutput" value="Status:" />
+            <h:outputText id="statusOutput" value="#{taskBean.form.status}" />
+
+            <h:outputLabel for="projectOutput" value="Project:" />
+            <h:outputText id="projectOutput" value="#{taskBean.form.project}" />
+
+            <h:outputLabel for="assignedToOutput" value="Assigned To:" />
+            <h:outputText id="assignedToOutput" value="#{taskBean.form.assignedTo}" />
+
+            <h:outputLabel for="commentOutput" value="Comment:" />
+            <h:outputText id="commentOutput" value="#{taskBean.comment}" />
+        </h:panelGrid>
+        <p:commandButton value="Close" type="button" onclick="PF('showDetailsDialogWidget').hide()" />
+    </p:dialog>
+</h:body>
+</html>

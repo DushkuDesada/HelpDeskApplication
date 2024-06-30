@@ -1,0 +1,60 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:jsf="http://xmlns.jcp.org/jsf" xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/layout/template.xhtml">
+   <ui:define name="metadata">
+      <f:metadata>
+         <f:viewAction action="#{userBean.loadUserDetails()}"/>
+      </f:metadata>
+   </ui:define>
+   <ui:define name="pageTitle">User Contact Details</ui:define>
+   <ui:define name="content">
+      <ui:fragment rendered="#{not empty loginBean.currentUser}">
+
+         <h:form id="form" role="form" class="form" prependId="false">
+            <div class="row g-3 mb-3">
+               <div class="col-auto">
+                  <h:outputLabel for="name" value="Name:"/>
+               </div>
+               <div class="col-auto">
+                  <input type="text"
+                         class="form-control"
+                         id="name"
+                         jsf:id="name"
+                         jsf:required="true"
+                         jsf:requiredMessage="Name is required."
+                         jsf:value="#{userBean.currentUser.username}"/>
+                  <p:message for="name" styleClass="text-danger"/>
+               </div>
+               <div class="col-auto">
+                  <h:outputLabel for="contactDetails" value="Contact Details:"/>
+               </div>
+               <div class="col-auto">
+
+                  <p:inputMask id="contactDetails" value="#{userBean.form.contactDetails}" mask="(999) 999-9999" placeholder="#{userBean.currentUser.contactDetails}" validateMask="true" />
+                  <p:message for="contactDetails" styleClass="text-danger"/>
+               </div>
+
+
+
+               <div class="col-auto">
+                  <button type="submit" class="btn btn-large btn-primary mb-3" jsf:id="saveProject" jsf:action="#{userBean.updateProject()}">
+                     <f:ajax execute="@form" render="@form"/>
+                     Save
+                  </button>
+               </div>
+            </div>
+            <!-- List group -->
+
+
+
+
+
+
+
+         </h:form>
+      </ui:fragment>
+   </ui:define>
+</ui:composition>

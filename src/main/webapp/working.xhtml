@@ -1,0 +1,183 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+                xmlns:f="http://xmlns.jcp.org/jsf/core"
+                xmlns:h="http://xmlns.jcp.org/jsf/html"
+                xmlns:p="http://primefaces.org/ui"
+                xmlns:jsf="http://xmlns.jcp.org/jsf"
+                template="/WEB-INF/layout/template.xhtml">
+    <ui:define name="metadata">
+        <f:metadata>
+            <f:viewAction action="#{workingHoursBean.init()}"/>
+        </f:metadata>
+    </ui:define>
+    <ui:define name="pageTitle">Working Hours</ui:define>
+    <ui:define name="content">
+        <ui:fragment rendered="#{not empty loginBean.currentUser}">
+        <ui:fragment rendered="#{loginBean.currentUser.role == 'ADMIN'}">
+            <h:form id="exportForm" prependId="false">
+                <h2>Export Working Hours</h2>
+                <div class="row g-4 mb-4">
+                    <div class="col-auto">
+                        <p:selectOneMenu id="projectId" value="#{WorkingReport.projectId}" >
+                            <f:selectItem itemLabel="Select Project" itemValue=""/>
+                            <f:selectItems value="#{workingHoursBean.projects}" var="project" itemLabel="#{project.name}" itemValue="#{project.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="project" display="text" styleClass="text-danger"/>
+                    </div>
+
+
+                    <div class="col-auto">
+                        <p:outputLabel for="userID" value="User:"/>
+                        <p:selectOneMenu id="userID" value="#{WorkingReport.userId}" >
+                            <f:selectItem itemLabel="Select User" itemValue=""/>
+                            <f:selectItems value="#{workingHoursBean.users}" var="user" itemLabel="#{user.username}" itemValue="#{user.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="user" display="text" styleClass="text-danger"/>
+                    </div>
+
+                    <!-- Start Time -->
+                    <div class="col-auto">
+                        <p:outputLabel for="stdate" value="Start Time:"/>
+                        <!--                        <p:inputText id="startTime" value="#{workingHoursBean.form.startTime}" required="true"/>-->
+                        <p:datePicker id="stdate" value="#{WorkingReport.stDate}" showTime="true" />
+                        <p:message for="stdate" display="text" styleClass="text-danger"/>
+                    </div>
+
+                    <!-- End Time -->
+                    <div class="col-auto">
+                        <p:outputLabel for="edDate" value="End Time:"/>
+                        <!--                        <p:inputText id="endTime" value="#{workingHoursBean.form.endTime}" required="true"/>-->
+                        <p:datePicker id="edDate" value="#{WorkingReport.edDate}" showTime="true" />
+                        <p:message for="edDate" display="text" styleClass="text-danger"/>
+                    </div>
+                    <div class="col-auto">
+                    <h:commandButton value="Export to Excel" action="#{WorkingReport.exportToExcel}" />
+                    </div>
+                </div>
+            </h:form>
+        </ui:fragment>
+
+
+
+            <h:form id="workingForm" role="form" class="form" prependId="false">
+                <ui:fragment rendered="#{loginBean.currentUser.role != 'CUSTOMER'}">
+                    <h2> Working Hours</h2>
+                <div class="row g-4 mb-4">
+                    <!-- User -->
+                    <div class="col-auto">
+                        <p:outputLabel for="user" value="User:"/>
+                        <p:selectOneMenu id="user" value="#{workingHoursBean.form.user}" required="true">
+                            <f:selectItem itemLabel="Select User" itemValue=""/>
+                            <f:selectItems value="#{workingHoursBean.users}" var="user" itemLabel="#{user.username}" itemValue="#{user.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="user" display="text" styleClass="text-danger"/>
+                    </div>
+
+                    <div class="col-auto">
+                        <p:outputLabel for="project" value="Project : "/>
+                        <p:selectOneMenu id="project" value="#{workingHoursBean.form.project}" required="true">
+                            <f:selectItem itemLabel="Select Project" itemValue=""/>
+                            <f:selectItems value="#{workingHoursBean.projects}" var="project" itemLabel="#{project.name}" itemValue="#{project.id}"/>
+                            <f:ajax event="change" listener="#{workingHoursBean.onProjectChange}" render="task"/>
+                        </p:selectOneMenu>
+                        <p:message for="project" display="text" styleClass="text-danger"/>
+                    </div>
+
+
+
+                <div class="col-auto">
+                        <p:outputLabel for="task" value="Task:"/>
+                        <p:selectOneMenu id="task" value="#{workingHoursBean.form.task}" required="true">
+                            <f:selectItem itemLabel="Select Task" itemValue=""/>
+                            <f:selectItems value="#{workingHoursBean.filteredTasks}" var="task" itemLabel="#{task.title}" itemValue="#{task.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="task" display="text" styleClass="text-danger"/>
+                </div>
+                <!-- Day of Week -->
+                    <div class="col-auto">
+                        <p:outputLabel for="dayOfWeek" value="Day of Week:"/>
+                        <p:selectOneMenu id="dayOfWeek" value="#{workingHoursBean.form.dayOfWeek}" required="true">
+                            <f:selectItem itemLabel="Select Day" itemValue=""/>
+                            <f:selectItems value="#{workingHoursBean.daysOfWeek}" var="day" itemLabel="#{day}" itemValue="#{day}"/>
+                        </p:selectOneMenu>
+                        <p:message for="dayOfWeek" display="text" styleClass="text-danger"/>
+                    </div>
+
+                    <!-- Start Time -->
+                    <div class="col-auto">
+                        <p:outputLabel for="startTime" value="Start Time:"/>
+<!--                        <p:inputText id="startTime" value="#{workingHoursBean.form.startTime}" required="true"/>-->
+                        <p:datePicker id="startTime" value="#{workingHoursBean.form.startTime}" showTime="true" />
+                        <p:message for="startTime" display="text" styleClass="text-danger"/>
+                    </div>
+
+                    <!-- End Time -->
+                    <div class="col-auto">
+                        <p:outputLabel for="endTime" value="End Time:"/>
+<!--                        <p:inputText id="endTime" value="#{workingHoursBean.form.endTime}" required="true"/>-->
+                        <p:datePicker id="endTime" value="#{workingHoursBean.form.endTime}" showTime="true" />
+                        <p:message for="endTime" display="text" styleClass="text-danger"/>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="col-auto">
+                        <p:commandButton value="Save" action="#{workingHoursBean.saveWorkingHour}" process="@form" update="@form"/>
+                    </div>
+                </div>
+                </ui:fragment>
+                <h2> Working Hours List</h2>
+                <!-- Display Working Hours -->
+                <ui:fragment rendered="#{not empty workingHoursBean.workingHours}">
+                <!-- Header -->
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <strong style="width: 50%;">Task Name</strong>
+                    <strong style="width: 20%;">Project Name</strong>
+                    <strong style="width: 20%;">Task By</strong>
+                    <strong style="width: 20%;">Start Time</strong>
+                    <strong style="width: 20%;">End Time</strong>
+                    <strong style="width: 20%;">Action</strong>
+
+                </li>
+            <!-- Projects list -->
+            <ul id="todotasks" class="list-group list-group-flush">
+                <ui:repeat var="wk" value="#{workingHoursBean.paginatedTask}">
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span style="width: 50%;">#{wk.task.title}</span>
+                            <span style="width: 20%;">#{wk.project.name}</span>
+                            <span style="width: 20%;">#{wk.user.username}</span>
+                            <span style="width: 20%;">#{wk.startTime}</span>
+                            <span style="width: 20%;">#{wk.endTime}</span>
+
+                            <div style="width: 20%;">
+                                <a jsf:immediate="true" jsf:action="#{workingHoursBean.editWork(wk.id)}">
+                                    <f:ajax execute="@this" render="@form"/>
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <a jsf:immediate="true" jsf:action="#{workingHoursBean.deleteWork(wk.id)}">
+                                    <f:ajax execute="@this" render="@all"/>
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </li>
+                </ui:repeat>
+            </ul>
+                </ui:fragment>
+
+
+        <!-- Pagination controls -->
+            <div class="pagination">
+                <ui:repeat var="pageNumber" value="#{workingHoursBean.pageNumbers}">
+                    <h:commandLink value="#{pageNumber}" styleClass="page-link">
+                        <f:ajax execute="@this" listener="#{workingHoursBean.changePage(pageNumber)}" render="@form"/>
+                    </h:commandLink>
+                </ui:repeat>
+            </div>
+            <ui:fragment rendered="#{empty workingHoursBean.workingHours}">
+                <p class="m-5">No Work items found</p>
+            </ui:fragment>
+            </h:form>
+        </ui:fragment>
+    </ui:define>
+</ui:composition>
