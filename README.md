@@ -4,7 +4,8 @@
  - run this command in project directory in your device
    ```
      mvn clean package liberty:dev -Popenliberty
-
+   Users:
+username: admin_user Pass: admin_password, Username: customer_user Pass: customer_password, Username: employee_user Pass: employee_password,
 
 ### Help Desk Application Project Report
 
